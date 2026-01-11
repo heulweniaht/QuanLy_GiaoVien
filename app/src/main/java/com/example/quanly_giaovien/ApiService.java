@@ -8,18 +8,21 @@ import java.util.List;
 public interface ApiService {
     String Base_Url = "https://nguyenha-001-site1.ltempurl.com/";
 
-    @GET("api/khoa")
+    @GET("api/Khoa")
     Call<List<Khoa>> getListKhoa();
 
-    @GET("api/giaovien")
+    @GET("api/GiaoVien")
     Call<List<GiaoVien>> getListGiaoVien(@Query("maKhoa") String maKhoa);
 
-    @POST("api/giaovien")
+    @POST("api/GiaoVien")
     Call<Void> addGiaoVien(@Body GiaoVien giaoVien);
 
-    @PUT("api/giaovien")
-    Call<Void> updateGiaoVien(@Body GiaoVien giaoVien);
+    @PUT("api/GiaoVien/{id}")
+    Call<Void> updateGiaoVien(
+            @Path("id") String maGV,
+            @Body GiaoVien giaoVien
+    );
 
-    @DELETE("api/giaovien/{id}")
+    @DELETE("api/GiaoVien/{id}")
     Call<Void> deleteGiaoVien(@Path("id") String maGV);
 }

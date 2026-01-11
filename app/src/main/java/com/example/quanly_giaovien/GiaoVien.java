@@ -13,6 +13,8 @@ public class GiaoVien implements Serializable {
     private String hocHam;
     private String hocVi;
     private String email;
+
+    @SerializedName(value = "sdt", alternate = {"soDienThoai", "phone"})
     private String soDienThoai;
     private String anh;
     private String maKhoa;
