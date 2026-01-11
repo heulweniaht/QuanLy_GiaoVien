@@ -114,8 +114,12 @@ public class FormActivity extends AppCompatActivity {
         Khoa selectedKhoa = (Khoa) spnKhoa.getSelectedItem();
         if (selectedKhoa != null) {
             gv.setMaKhoa(selectedKhoa.getMaKhoa());
+            gv.setTenKhoa(selectedKhoa.getTenKhoa());
         }
-
+        if (gvEdit != null) {
+            // Khi cập nhật, cần giữ nguyên userID của đối tượng cũ (nếu backend cần)
+            gv.setUserID(gvEdit.getUserID());
+        }
         // ===== LOG DỮ LIỆU GỬI LÊN SERVER =====
         Log.d("SAVE_GV", "MaGV: " + gv.getMaGV());
         Log.d("SAVE_GV", "HoTen: " + gv.getHoTen());
@@ -129,49 +133,46 @@ public class FormActivity extends AppCompatActivity {
         // =====================================
 
         if (gvEdit == null) {
+            // Code Thêm mới (giữ nguyên hoặc kiểm tra Log lỗi tương tự bên dưới)
             apiService.addGiaoVien(gv).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
-                        Toast.makeText(FormActivity.this, "Thêm mới thành công", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FormActivity.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
-                        Log.e("API_ERROR", "Code: " + response.code());
-                        Toast.makeText(FormActivity.this,
-                                "Thêm mới thất bại: " + response.code(),
-                                Toast.LENGTH_SHORT).show();
+                        // Hiển thị lỗi rõ ràng để debug
+                        Toast.makeText(FormActivity.this, "Lỗi thêm (Code: " + response.code() + ")", Toast.LENGTH_LONG).show();
+                        Log.e("API_ERROR", "Add failed: " + response.errorBody());
+                    }
+                }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(FormActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            // Code Cập nhật
+            apiService.updateGiaoVien(gv.getMaGV(), gv).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(FormActivity.this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        // --- ĐÂY LÀ CHỖ BẠN BỊ "IM LẶNG" ---
+                        // Thêm Toast để biết lỗi gì
+                        Toast.makeText(FormActivity.this, "Lỗi cập nhật (Code: " + response.code() + ")", Toast.LENGTH_LONG).show();
+                        Log.e("API_ERROR", "Update failed. Code: " + response.code());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    Log.e("API_ERROR", "Lỗi: ", t);
-                    Toast.makeText(FormActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+                    Log.e("API_ERROR", "Update error", t);
+                    Toast.makeText(FormActivity.this, "Lỗi kết nối server", Toast.LENGTH_SHORT).show();
                 }
             });
-        } else {
-            apiService.updateGiaoVien(gv.getMaGV(), gv)
-                    .enqueue(new Callback<Void>() {
-                        @Override
-                        public void onResponse(Call<Void> call, Response<Void> response) {
-                            if (response.isSuccessful()) {
-                                Toast.makeText(FormActivity.this,
-                                        "Cập nhật thành công",
-                                        Toast.LENGTH_SHORT).show();
-                                finish();
-                            } else {
-                                Log.e("API_ERROR", "Update failed. Code: " + response.code());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<Void> call, Throwable t) {
-                            Log.e("API_ERROR", "Update error", t);
-                            Toast.makeText(FormActivity.this,
-                                    "Lỗi kết nối",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    });
         }
     }
 

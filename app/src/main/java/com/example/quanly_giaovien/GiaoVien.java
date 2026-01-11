@@ -19,7 +19,7 @@ public class GiaoVien implements Serializable {
     private String anh;
     private String maKhoa;
     private String tenKhoa;
-
+    private Integer userID;
     public GiaoVien() {}
 
     // Getter & Setter
@@ -48,5 +48,7 @@ public class GiaoVien implements Serializable {
     public void setMaKhoa(String maKhoa) { this.maKhoa = maKhoa; }
 
     public String getTenKhoa() { return tenKhoa; }
+    public Integer getUserID() { return userID; }
+    public void setUserID(Integer userID) { this.userID = userID; }
     public void setTenKhoa(String tenKhoa) { this.tenKhoa = tenKhoa; }
 }
